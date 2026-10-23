@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+if (!is_file(__DIR__.'/vendor/autoload.php')) {
+    fwrite(STDERR, "Composer dependencies are missing. Run: composer install\n");
+    exit(1);
+}
+
+require __DIR__.'/vendor/autoload.php';
+
+$app = require_once __DIR__.'/bootstrap/app.php';
+
+$status = $app->handleCommand(new ArgvInput, new ConsoleOutput);
+exit($status);
