@@ -21,8 +21,20 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
+        $step = $request->session()->get('admin_login_step', 'password');
+
+        // Langkah OTP hanya sah kalau OTP-nya benar-benar ada dan belum kedaluwarsa.
+        // Kalau tidak, mundur ke langkah sebelumnya supaya tidak "nyangkut" di langkah 3.
+        if ($step === 'otp'
+            && (! $request->session()->get('admin_otp_hash')
+                || now()->timestamp > (int) $request->session()->get('admin_otp_expires_at', 0))) {
+            $request->session()->forget(['admin_otp_hash', 'admin_otp_expires_at', 'admin_otp_attempts', 'admin_otp_email', 'admin_login_user_id']);
+            $step = $request->session()->get('admin_password_verified') ? 'email' : 'password';
+            $request->session()->put('admin_login_step', $step);
+        }
+
         return view('admin.login', [
-            'step' => $request->session()->get('admin_login_step', 'password'),
+            'step' => $step,
             'otpExpiresAt' => $request->session()->get('admin_otp_expires_at'),
             'otpEmail' => $request->session()->get('admin_otp_email'),
         ]);
@@ -95,6 +107,20 @@ class AuthController extends Controller
         }
 
         $otp = (string) random_int(100000, 999999);
+
+        // Kirim email DULU. Sesi OTP baru disimpan setelah email benar-benar terkirim,
+        // supaya kegagalan kirim email tidak meninggalkan user di "Langkah 3" tanpa OTP.
+        try {
+            Mail::raw("Kode OTP B!ng0.dev Anda: {$otp}\n\nKode ini berlaku selama 5 menit dan hanya dapat digunakan sekali.", function ($message) use ($user) {
+                $message->to($user->email)->subject('Kode OTP Login Admin — B!ng0.dev');
+            });
+        } catch (\Throwable $e) {
+            report($e);
+            ActivityLog::record('otp_send_failed', 'auth', $user->id, 'Gagal mengirim OTP ke '.$user->email.' | IP: '.$request->ip());
+
+            return back()->withErrors(['email' => 'OTP gagal dikirim. Periksa pengaturan email server (Resend) lalu coba lagi.']);
+        }
+
         $request->session()->put([
             'admin_login_step' => 'otp',
             'admin_login_user_id' => $user->id,
@@ -103,10 +129,6 @@ class AuthController extends Controller
             'admin_otp_expires_at' => now()->addMinutes(5)->timestamp,
             'admin_otp_attempts' => 0,
         ]);
-
-        Mail::raw("Kode OTP B!ng0.dev Anda: {$otp}\n\nKode ini berlaku selama 5 menit dan hanya dapat digunakan sekali.", function ($message) use ($user) {
-            $message->to($user->email)->subject('Kode OTP Login Admin — B!ng0.dev');
-        });
 
         ActivityLog::record('otp_sent', 'auth', $user->id, 'OTP dikirim ke '.$user->email.' | IP: '.$request->ip());
 

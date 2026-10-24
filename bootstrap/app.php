@@ -14,6 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
+        // Render berada di belakang reverse proxy (HTTPS dihentikan di proxy).
+        $middleware->trustProxies(at: '*');
         $middleware->alias([
             'admin.security' => AdminSecurity::class,
         ]);

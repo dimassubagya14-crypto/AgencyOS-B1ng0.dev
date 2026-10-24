@@ -12,11 +12,19 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $adminPassword = config('agency.admin_password');
+        if (! $adminPassword) {
+            if (app()->environment('production')) {
+                throw new \RuntimeException('ADMIN_PASSWORD wajib diisi sebelum seeding di production.');
+            }
+            $adminPassword = 'password'; // hanya untuk lokal
+        }
+
         User::firstOrCreate(
-            ['email' => 'admin@bing0.dev'],
+            ['email' => config('agency.admin_email')],
             [
                 'name' => 'Admin B!ng0.dev',
-                'password' => 'password', // auto-hash via cast — GANTI setelah seed pertama
+                'password' => $adminPassword, // auto-hash via cast
                 'role' => 'admin',
                 'is_active' => true,
             ]

@@ -37,7 +37,7 @@
         @csrf
         <div class="mb-5">
           <label class="block text-sm font-medium text-primary mb-1.5" for="email">Email</label>
-          <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus autocomplete="email" placeholder="admin@bing0.dev" class="w-full border border-outline-variant rounded-lg px-4 py-2.5 text-sm" />
+          <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus autocomplete="email" placeholder="akun@email.nya" class="w-full border border-outline-variant rounded-lg px-4 py-2.5 text-sm" />
         </div>
         <button type="submit" class="w-full bg-primary text-on-primary py-2.5 rounded font-medium">Kirim OTP</button>
       </form>
