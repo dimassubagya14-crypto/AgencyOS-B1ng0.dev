@@ -7,7 +7,7 @@
 <section class="max-w-6xl mx-auto px-5 md:px-10 pt-16 pb-14 md:pt-28 md:pb-24">
   <p class="font-mono text-xs uppercase tracking-widest text-secondary mb-4">Jasa pengembangan web & aplikasi custom</p>
   <h1 class="font-display font-bold text-3xl md:text-6xl leading-tight text-primary max-w-3xl mb-6">Kami bangun sistem, Anda jalankan bisnis.</h1>
-  <p class="text-base md:text-lg text-on-surface-variant max-w-xl mb-8">Dari company profile sampai sistem informasi custom — tim B!ng0.dev menangani sisi teknis supaya tim Anda fokus ke pertumbuhan.</p>
+  <p class="text-base md:text-lg text-on-surface-variant max-w-xl mb-8">Mulai dari company profile sampai sistem informasi custom — tim B!ng0.dev menangani sisi teknis supaya tim Anda fokus ke pertumbuhan.</p>
   <div class="flex flex-wrap gap-3">
     <a href="{{ route('requests.create') }}" class="bg-primary text-on-primary px-6 py-3 rounded font-semibold hover:bg-inverse-surface transition-colors">Pesan Jasa</a>
     <a href="{{ route('portfolio.index') }}" class="border border-primary text-primary px-6 py-3 rounded font-semibold hover:bg-surface-container-low transition-colors">Lihat Portfolio</a>
