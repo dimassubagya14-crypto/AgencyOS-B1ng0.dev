@@ -34,6 +34,12 @@ class ServiceRequestController extends Controller
 
     public function store(Request $httpRequest): RedirectResponse
     {
+        // Anti-bot: kolom "website" disembunyikan dari pengunjung asli. Kalau terisi, anggap spam.
+        if ($httpRequest->filled('website')) {
+            return redirect()->route('requests.success')
+                ->with('request_number', 'REQ-'.now()->format('Ymd').'-'.random_int(1000, 9999));
+        }
+
         $validated = $httpRequest->validate([
             'company_name' => ['required', 'string', 'max:255'],
             'contact_name' => ['required', 'string', 'max:255'],

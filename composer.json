@@ -2,13 +2,18 @@
     "name": "agencyos/web-development-system",
     "type": "project",
     "description": "Agency Web Development System - MVP (P0) codebase, sesuai PRD & SDLC v2.",
-    "keywords": ["laravel", "agency", "crm", "portfolio"],
+    "keywords": [
+        "laravel",
+        "agency",
+        "crm",
+        "portfolio"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^2.9",
+        "laravel/tinker": "^2.10.1",
         "resend/resend-laravel": "^1.7"
     },
     "require-dev": {

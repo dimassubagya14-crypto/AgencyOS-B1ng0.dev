@@ -14,6 +14,9 @@ class AuthController extends Controller
     // POST /api/login
     public function login(Request $request): JsonResponse
     {
+        // Jalur ini melewati OTP, jadi dimatikan kecuali sengaja dinyalakan (API_LOGIN_ENABLED=true).
+        abort_unless(config('agency.api_login_enabled'), 404);
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
