@@ -10,6 +10,11 @@
 
   <form method="POST" action="{{ route('requests.store') }}" class="bg-white border border-outline-variant rounded-xl p-6 md:p-8 card-shadow space-y-5">
     @csrf
+    {{-- Anti-bot: jangan diisi (disembunyikan dari pengunjung asli) --}}
+    <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+      <label for="website">Website</label>
+      <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+    </div>
 
     <div>
       <h2 class="font-display font-semibold text-lg text-primary mb-4">Data Kontak</h2>

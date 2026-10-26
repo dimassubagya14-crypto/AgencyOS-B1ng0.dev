@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Route;
 | PUBLIK — tanpa auth, dipakai oleh website publik
 |--------------------------------------------------------------------------
 */
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/requests', [ServiceRequestPublicController::class, 'store']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:admin-login');
+Route::post('/requests', [ServiceRequestPublicController::class, 'store'])->middleware('throttle:public-form');
 Route::get('/portfolios', [PublicContentController::class, 'portfolios']);
 Route::get('/portfolios/{slug}', [PublicContentController::class, 'portfolio']);
 Route::get('/company-profile', [PublicContentController::class, 'companyProfile']);

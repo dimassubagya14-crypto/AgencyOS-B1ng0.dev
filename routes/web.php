@@ -23,7 +23,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio.index');
 Route::get('/portfolio/{slug}', [PortfolioController::class, 'show'])->name('portfolio.show');
 Route::get('/pesan-jasa', [ServiceRequestController::class, 'create'])->name('requests.create');
-Route::post('/pesan-jasa', [ServiceRequestController::class, 'store'])->name('requests.store');
+Route::post('/pesan-jasa', [ServiceRequestController::class, 'store'])->middleware('throttle:public-form')->name('requests.store');
 Route::get('/pesan-jasa/sukses', [ServiceRequestController::class, 'success'])->name('requests.success');
 
 // SEO — sitemap dinamis dari portfolio yang publish + halaman statis.
@@ -56,10 +56,10 @@ Route::get('/sitemap.xml', function () {
 */
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
-    Route::post('/login/password', [AdminAuthController::class, 'verifyPassword'])->name('login.password');
-    Route::post('/login/email', [AdminAuthController::class, 'sendOtp'])->name('login.email');
-    Route::post('/login/otp', [AdminAuthController::class, 'verifyOtp'])->name('login.otp');
-    Route::post('/login/resend', [AdminAuthController::class, 'resendOtp'])->name('login.resend');
+    Route::post('/login/password', [AdminAuthController::class, 'verifyPassword'])->middleware('throttle:admin-login')->name('login.password');
+    Route::post('/login/email', [AdminAuthController::class, 'sendOtp'])->middleware('throttle:admin-login')->name('login.email');
+    Route::post('/login/otp', [AdminAuthController::class, 'verifyOtp'])->middleware('throttle:admin-login')->name('login.otp');
+    Route::post('/login/resend', [AdminAuthController::class, 'resendOtp'])->middleware('throttle:admin-login')->name('login.resend');
     Route::post('/login/reset', [AdminAuthController::class, 'resetLogin'])->name('login.reset');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
