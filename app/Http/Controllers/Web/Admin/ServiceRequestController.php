@@ -173,7 +173,14 @@ class ServiceRequestController extends Controller
             'content' => ['nullable', 'string', 'max:10000'],
         ])['content'] ?? $messages['email'];
 
-        Mail::to($email)->send(new TeamAssignmentMail($request, $member, $content));
+        try {
+            Mail::to($email)->send(new TeamAssignmentMail($request, $member, $content));
+        } catch (\Throwable $e) {
+            report($e);
+            ActivityLog::record('notification_failed', 'service_requests', $request->id, "Email pembagian tugas {$request->number} ke {$member->name} gagal dikirim");
+
+            return back()->withErrors(['email' => "Email ke {$member->name} gagal dikirim. Periksa pengaturan email (Resend) atau alamat email anggota tim, lalu coba lagi."]);
+        }
 
         $request->teamMembers()->updateExistingPivot($member->id, ['email_sent_at' => now()]);
         ActivityLog::record('notification', 'service_requests', $request->id, "Email pembagian tugas {$request->number} dikirim ke {$member->name}");

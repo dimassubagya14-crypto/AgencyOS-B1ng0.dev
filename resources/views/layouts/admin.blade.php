@@ -10,9 +10,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet" />
 <link rel="stylesheet" href="/css/app.css" />
+@include('partials.pwa-head', ['pwaScope' => 'admin'])
 @stack('head')
 </head>
 <body class="font-body text-on-surface antialiased admin-body">
+@include('partials.page-loader', ['loaderMin' => 450, 'loaderMinRepeat' => 150])
 
 <div class="admin-shell min-h-screen bg-surface-container-low">
   <aside class="admin-sidebar bg-primary">
@@ -137,5 +139,6 @@
   document.addEventListener("DOMContentLoaded",()=>{apply();document.querySelectorAll(".theme-toggle").forEach(b=>b.addEventListener("click",()=>{localStorage.setItem(key,localStorage.getItem(key)==="dark"?"light":"dark");apply();}));});
 })();
 </script>
+@include('partials.pwa-install')
 </body>
 </html>

@@ -7,9 +7,12 @@ use App\Http\Controllers\Web\Admin\CompanyProfileController as AdminCompanyProfi
 use App\Http\Controllers\Web\Admin\DashboardController;
 use App\Http\Controllers\Web\Admin\PortfolioController as AdminPortfolioController;
 use App\Http\Controllers\Web\Admin\ServiceRequestController as AdminServiceRequestController;
+use App\Http\Controllers\Web\Admin\TeamPortfolioController as AdminTeamPortfolioController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\PortfolioController;
+use App\Http\Controllers\Web\PwaController;
 use App\Http\Controllers\Web\ServiceRequestController;
+use App\Http\Controllers\Web\TeamPortfolioController;
 use App\Models\Portfolio;
 use Illuminate\Support\Facades\Route;
 
@@ -22,9 +25,15 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio.index');
 Route::get('/portfolio/{slug}', [PortfolioController::class, 'show'])->name('portfolio.show');
+Route::get('/tim/{slug}', [TeamPortfolioController::class, 'show'])->where('slug', '[a-z0-9\-]+')->name('team.portfolio');
 Route::get('/pesan-jasa', [ServiceRequestController::class, 'create'])->name('requests.create');
 Route::post('/pesan-jasa', [ServiceRequestController::class, 'store'])->middleware('throttle:public-form')->name('requests.store');
 Route::get('/pesan-jasa/sukses', [ServiceRequestController::class, 'success'])->name('requests.success');
+
+// PWA: manifest (tanpa ekstensi supaya selalu lewat Laravel) + halaman offline.
+Route::get('/app-manifest', [PwaController::class, 'manifest'])->name('pwa.manifest');
+Route::get('/admin/app-manifest', [PwaController::class, 'adminManifest'])->name('pwa.manifest.admin');
+Route::get('/offline', [PwaController::class, 'offline'])->name('pwa.offline');
 
 // SEO — sitemap dinamis dari portfolio yang publish + halaman statis.
 Route::get('/media/{path}', [App\Http\Controllers\Web\MediaController::class, 'show'])
@@ -83,6 +92,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/team/{member}/edit', [App\Http\Controllers\Web\Admin\TeamMemberController::class, 'edit'])->name('team.edit');
         Route::patch('/team/{member}', [App\Http\Controllers\Web\Admin\TeamMemberController::class, 'update'])->name('team.update');
         Route::delete('/team/{member}', [App\Http\Controllers\Web\Admin\TeamMemberController::class, 'destroy'])->name('team.destroy');
+
+        // Portofolio pribadi anggota tim (halaman publik /tim/{slug}).
+        Route::get('/team/{member}/portfolio', [AdminTeamPortfolioController::class, 'edit'])->name('team.portfolio.edit');
+        Route::put('/team/{member}/portfolio', [AdminTeamPortfolioController::class, 'update'])->name('team.portfolio.update');
+        Route::post('/team/{member}/portfolio/generate', [AdminTeamPortfolioController::class, 'generate'])->name('team.portfolio.generate');
+        Route::post('/team/{member}/portfolio/publish', [AdminTeamPortfolioController::class, 'togglePublish'])->name('team.portfolio.publish');
+        Route::get('/team/{member}/portfolio/preview', [AdminTeamPortfolioController::class, 'preview'])->name('team.portfolio.preview');
 
         Route::get('/clients', [AdminClientController::class, 'index'])->name('clients.index');
         Route::patch('/clients/{client}', [AdminClientController::class, 'update'])->name('clients.update');
