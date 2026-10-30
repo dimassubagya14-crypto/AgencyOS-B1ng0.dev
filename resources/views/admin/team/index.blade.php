@@ -40,6 +40,7 @@
       @endif
       <div class="team-actions">
         <a href="{{ route('admin.team.edit', $m) }}">Edit</a>
+        <a href="{{ route('admin.team.portfolio.edit', $m) }}">Portofolio{{ $m->portfolio_published ? ' ✓' : '' }}</a>
         <form method="POST" action="{{ route('admin.team.destroy', $m) }}" onsubmit="return confirm('Hapus {{ $m->name }} dari tim?');">
           @csrf @method('DELETE')
           <button type="submit">Hapus</button>

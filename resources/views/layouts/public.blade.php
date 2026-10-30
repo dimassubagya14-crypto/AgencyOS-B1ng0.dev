@@ -16,9 +16,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet" />
 <link rel="stylesheet" href="/css/app.css" />
+@include('partials.pwa-head', ['pwaScope' => 'public'])
 @stack('head')
 </head>
 <body class="font-body text-on-surface antialiased">
+@include('partials.page-loader')
 
 <header class="glass sticky top-0 z-40 border-b border-outline-variant">
   <div class="max-w-6xl mx-auto px-5 md:px-10 h-[64px] md:h-[72px] flex items-center justify-between">
@@ -183,5 +185,6 @@
     document.body.style.overflow = '';
   }
 </script>
+@include('partials.pwa-install')
 </body>
 </html>
