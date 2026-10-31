@@ -3,119 +3,207 @@
 @section('title', $portfolio->name.' — Portfolio B!ng0.dev')
 @section('description', Str::limit(strip_tags($portfolio->tagline ?: $portfolio->description), 150))
 
+@push('head')
+<link rel="stylesheet" href="/css/portfolio-pro.css" />
+<script src="/js/portfolio-pro.js" defer></script>
+@endpush
+
 @section('content')
+@php
+    $heroImg = $portfolio->banner ?: $portfolio->thumbnail;
+    $gallery = array_values($portfolio->gallery ?? []);
+    $features = array_values($portfolio->features ?? []);
+    $techs = array_values($portfolio->technologies ?? []);
+    $meta = array_filter([
+        'Klien' => $portfolio->client_name,
+        'Tahun' => $portfolio->project_year,
+        'Durasi' => $portfolio->duration,
+        'Kategori' => $portfolio->category,
+    ], fn ($v) => filled($v));
+    $nav = ['ringkasan' => 'Ringkasan'];
+    if ($portfolio->problem || $portfolio->solution) { $nav['masalah-solusi'] = 'Masalah & Solusi'; }
+    if ($portfolio->results) { $nav['hasil'] = 'Hasil'; }
+    if (count($gallery)) { $nav['galeri'] = 'Galeri'; }
+    if (count($features) || count($techs)) { $nav['teknis'] = 'Fitur & Teknologi'; }
+    if ($portfolio->testimonial_text) { $nav['testimoni'] = 'Testimoni'; }
+@endphp
 
-@if ($portfolio->banner)
-  <div class="w-full h-56 md:h-96 bg-surface-container-high overflow-hidden">
-    <img src="{{ route('media', ['path' => $portfolio->banner]) }}" alt="Banner project {{ $portfolio->name }}" class="w-full h-full object-cover" />
-  </div>
-@endif
+<div class="pp">
 
-<article class="max-w-3xl mx-auto px-5 md:px-10 py-10 md:py-14">
-  <a href="{{ route('portfolio.index') }}" class="text-xs font-mono text-secondary hover:underline mb-6 inline-block">← Kembali ke Portfolio</a>
-
-  <div class="flex flex-wrap items-center gap-2 mb-3">
-    <span class="font-mono text-[11px] uppercase tracking-wider text-secondary">{{ $portfolio->category }}</span>
-    @if ($portfolio->project_year)<span class="text-on-surface-variant text-xs">· {{ $portfolio->project_year }}</span>@endif
-    @if ($portfolio->duration)<span class="text-on-surface-variant text-xs">· {{ $portfolio->duration }}</span>@endif
-  </div>
-
-  <h1 class="font-display font-bold text-2xl md:text-4xl text-primary mb-2">{{ $portfolio->name }}</h1>
-  @if ($portfolio->tagline)
-    <p class="text-base md:text-lg text-on-surface-variant mb-4">{{ $portfolio->tagline }}</p>
-  @endif
-  @if ($portfolio->client_name)
-    <p class="text-sm text-on-surface-variant mb-8">Client: <span class="font-medium text-primary">{{ $portfolio->client_name }}</span></p>
-  @endif
-
-  @if (!$portfolio->banner && $portfolio->thumbnail)
-    <img src="{{ route('media', ['path' => $portfolio->thumbnail]) }}" alt="Tampilan {{ $portfolio->name }}" class="w-full rounded-lg mb-8 border border-outline-variant" />
-  @endif
-
-  <p class="text-sm md:text-base mb-8 leading-relaxed">{{ $portfolio->description }}</p>
-
-  @if ($portfolio->problem || $portfolio->solution)
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      @if ($portfolio->problem)
-        <div class="bg-surface-container-low rounded-lg p-5">
-          <h2 class="font-mono text-xs uppercase tracking-wider text-on-surface-variant mb-2">Masalah</h2>
-          <p class="text-sm">{{ $portfolio->problem }}</p>
-        </div>
-      @endif
-      @if ($portfolio->solution)
-        <div class="bg-surface-container-low rounded-lg p-5">
-          <h2 class="font-mono text-xs uppercase tracking-wider text-on-surface-variant mb-2">Solusi</h2>
-          <p class="text-sm">{{ $portfolio->solution }}</p>
-        </div>
-      @endif
+  <header class="pp-dhero {{ $heroImg ? '' : 'no-img' }}">
+    @if ($heroImg)
+      <img class="pp-dhero-img" src="{{ route('media', ['path' => $heroImg]) }}" alt="Tampilan project {{ $portfolio->name }}" />
+    @else
+      <span class="pp-blob b1"></span>
+      <span class="pp-blob b2"></span>
+    @endif
+    <div class="pp-wrap pp-dhero-in">
+      <a href="{{ route('portfolio.index') }}" class="pp-back">← Semua Portfolio</a>
+      <div class="pp-tags">
+        <span class="pp-tag">{{ $portfolio->category }}</span>
+        @if ($portfolio->project_year)<span class="pp-tag">{{ $portfolio->project_year }}</span>@endif
+      </div>
+      <h1 class="pp-dtitle">{{ $portfolio->name }}</h1>
+      @if ($portfolio->tagline)<p class="pp-dsub">{{ $portfolio->tagline }}</p>@endif
+      <div class="pp-actions">
+        @if ($portfolio->url)
+          <a href="{{ $portfolio->url }}" target="_blank" rel="noopener noreferrer" class="pp-btn">Kunjungi Website →</a>
+        @endif
+        <button type="button" class="pp-btn pp-btn-ghost" data-pp-share><span data-label>Bagikan</span></button>
+      </div>
     </div>
-  @endif
+  </header>
 
-  @if ($portfolio->results)
-    <div class="bg-primary rounded-lg p-6 mb-8">
-      <h2 class="font-mono text-xs uppercase tracking-wider text-white/50 mb-2">Hasil</h2>
-      <p class="text-sm text-white">{{ $portfolio->results }}</p>
-    </div>
-  @endif
+  <div class="pp-wrap">
 
-  @if ($portfolio->gallery && count($portfolio->gallery))
-    <div class="mb-8">
-      <h2 class="font-mono text-xs uppercase tracking-wider text-on-surface-variant mb-3">Galeri</h2>
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-        @foreach ($portfolio->gallery as $img)
-          <img src="{{ route('media', ['path' => $img]) }}" alt="Screenshot {{ $portfolio->name }}" onclick="openLightbox('{{ route('media', ['path' => $img]) }}', 'Screenshot {{ $portfolio->name }}')" class="w-full h-32 md:h-40 object-cover rounded-lg border border-outline-variant cursor-pointer hover:opacity-90 transition-opacity" loading="lazy" />
+    @if (count($meta))
+      <div class="pp-meta">
+        @foreach ($meta as $label => $value)
+          <div class="pp-meta-item" data-reveal style="--d:{{ $loop->index * 80 }}ms">
+            <div class="pp-meta-label">{{ $label }}</div>
+            <div class="pp-meta-value">{{ $value }}</div>
+          </div>
         @endforeach
       </div>
-    </div>
-  @endif
-
-  @if ($portfolio->features && count($portfolio->features))
-    <div class="mb-6">
-      <h2 class="font-mono text-xs uppercase tracking-wider text-on-surface-variant mb-2">Fitur</h2>
-      <div class="flex flex-wrap gap-2">
-        @foreach ($portfolio->features as $f)<span class="px-2 py-1 bg-surface-container-low rounded text-xs">{{ $f }}</span>@endforeach
-      </div>
-    </div>
-  @endif
-
-  @if ($portfolio->technologies && count($portfolio->technologies))
-    <div class="mb-8">
-      <h2 class="font-mono text-xs uppercase tracking-wider text-on-surface-variant mb-2">Teknologi</h2>
-      <div class="flex flex-wrap gap-2">
-        @foreach ($portfolio->technologies as $t)<span class="px-2 py-1 bg-surface-container-high rounded text-xs font-mono">{{ $t }}</span>@endforeach
-      </div>
-    </div>
-  @endif
-
-  @if ($portfolio->testimonial_text)
-    <blockquote class="border-l-4 border-secondary-bright pl-5 py-1 mb-8">
-      <p class="text-sm md:text-base italic text-primary mb-2">&ldquo;{{ $portfolio->testimonial_text }}&rdquo;</p>
-      @if ($portfolio->testimonial_author)
-        <cite class="text-xs font-mono text-on-surface-variant not-italic">— {{ $portfolio->testimonial_author }}</cite>
-      @endif
-    </blockquote>
-  @endif
-
-  <div class="flex flex-wrap items-center gap-3 mb-10">
-    @if ($portfolio->url)
-      <a href="{{ $portfolio->url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 rounded-lg border border-outline-variant px-4 py-2 text-sm font-medium text-secondary hover:bg-surface-container-low">Kunjungi project <span class="material-symbols-outlined text-[16px]">open_in_new</span></a>
     @endif
+
   </div>
 
-  <div class="border-t border-outline-variant pt-8 text-center">
-    <p class="text-sm text-on-surface-variant mb-4">Tertarik dengan hasil serupa untuk bisnis Anda?</p>
-    <a href="{{ route('requests.create') }}" class="inline-block bg-primary text-on-primary px-6 py-3 rounded font-semibold hover:bg-inverse-surface">Pesan Jasa Sekarang</a>
-  </div>
-</article>
+  @if (count($nav) > 2)
+    <nav class="pp-nav" aria-label="Bagian halaman">
+      <div class="pp-wrap">
+        <div class="pp-nav-in">
+          @foreach ($nav as $id => $label)
+            <a href="#{{ $id }}" data-spy>{{ $label }}</a>
+          @endforeach
+        </div>
+      </div>
+    </nav>
+  @endif
 
-@if ($related->count())
-<section class="max-w-6xl mx-auto px-5 md:px-10 pb-16 border-t border-outline-variant pt-12">
-  <h2 class="font-display font-bold text-xl text-primary mb-6">Project Serupa</h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    @foreach ($related as $p)
-      @include('portfolio._card', ['p' => $p])
-    @endforeach
+  <div class="pp-wrap">
+    <div class="pp-body">
+
+      <section id="ringkasan" class="pp-section">
+        <h2 class="pp-h" data-reveal>Ringkasan</h2>
+        <p class="pp-lead" data-reveal style="--d:80ms">{{ $portfolio->description }}</p>
+      </section>
+
+      @if ($portfolio->problem || $portfolio->solution)
+        <section id="masalah-solusi" class="pp-section">
+          <h2 class="pp-h" data-reveal>Masalah &amp; Solusi</h2>
+          <div class="pp-duo">
+            @if ($portfolio->problem)
+              <div data-reveal>
+                <div class="pp-card">
+                  <h3>Masalah</h3>
+                  <p>{{ $portfolio->problem }}</p>
+                </div>
+              </div>
+            @endif
+            @if ($portfolio->solution)
+              <div data-reveal style="--d:100ms">
+                <div class="pp-card">
+                  <h3>Solusi</h3>
+                  <p>{{ $portfolio->solution }}</p>
+                </div>
+              </div>
+            @endif
+          </div>
+        </section>
+      @endif
+
+      @if ($portfolio->results)
+        <section id="hasil" class="pp-section">
+          <h2 class="pp-h" data-reveal>Hasil</h2>
+          <div class="pp-result" data-reveal style="--d:80ms"><p>{{ $portfolio->results }}</p></div>
+        </section>
+      @endif
+
+      @if (count($gallery))
+        <section id="galeri" class="pp-section">
+          <h2 class="pp-h" data-reveal>Galeri</h2>
+          <div class="pp-gallery">
+            @foreach ($gallery as $img)
+              <button type="button" class="pp-shot" data-pp-full="{{ route('media', ['path' => $img]) }}" data-alt="Screenshot {{ $portfolio->name }}" aria-label="Perbesar gambar {{ $loop->iteration }}" data-reveal style="--d:{{ min($loop->index, 8) * 70 }}ms">
+                <img src="{{ route('media', ['path' => $img]) }}" alt="Screenshot {{ $portfolio->name }}" loading="lazy" />
+              </button>
+            @endforeach
+          </div>
+        </section>
+      @endif
+
+      @if (count($features) || count($techs))
+        <section id="teknis" class="pp-section">
+          <h2 class="pp-h" data-reveal>Fitur &amp; Teknologi</h2>
+          @if (count($features))
+            <ul class="pp-feats">
+              @foreach ($features as $f)
+                <li data-reveal style="--d:{{ min($loop->index, 10) * 50 }}ms"><span class="pp-feat">{{ $f }}</span></li>
+              @endforeach
+            </ul>
+          @endif
+          @if (count($techs))
+            <p class="pp-sub-h" data-reveal>Teknologi yang dipakai</p>
+            <div class="pp-chips">
+              @foreach ($techs as $t)
+                <span data-reveal style="--d:{{ min($loop->index, 12) * 40 }}ms"><span class="pp-chip">{{ $t }}</span></span>
+              @endforeach
+            </div>
+          @endif
+        </section>
+      @endif
+
+      @if ($portfolio->testimonial_text)
+        <section id="testimoni" class="pp-section">
+          <h2 class="pp-h" data-reveal>Testimoni</h2>
+          <blockquote class="pp-quote" data-reveal style="--d:80ms">
+            <p>&ldquo;{{ $portfolio->testimonial_text }}&rdquo;</p>
+            @if ($portfolio->testimonial_author)<cite>— {{ $portfolio->testimonial_author }}</cite>@endif
+          </blockquote>
+        </section>
+      @endif
+
+      <div class="pp-cta" data-reveal>
+        <h2>Tertarik dengan hasil serupa?</h2>
+        <p>Ceritakan kebutuhan Anda, tim kami siap membantu mewujudkannya.</p>
+        <a href="{{ route('requests.create') }}" class="pp-btn">Pesan Jasa Sekarang</a>
+      </div>
+
+      @if ($prev || $next)
+        <div class="pp-pn">
+          @if ($prev)
+            <div data-reveal>
+              <a href="{{ route('portfolio.show', $prev->slug) }}">
+                <small>← Sebelumnya</small>
+                <strong>{{ $prev->name }}</strong>
+              </a>
+            </div>
+          @endif
+          @if ($next)
+            <div data-reveal style="--d:80ms">
+              <a href="{{ route('portfolio.show', $next->slug) }}" class="is-next">
+                <small>Berikutnya →</small>
+                <strong>{{ $next->name }}</strong>
+              </a>
+            </div>
+          @endif
+        </div>
+      @endif
+
+    </div>
   </div>
-</section>
-@endif
+
+  @if ($related->count())
+    <section class="pp-wrap pp-related">
+      <h2 class="pp-h" data-reveal>Project Serupa</h2>
+      <div class="pp-grid">
+        @foreach ($related as $p)
+          <div class="pp-item">@include('portfolio._card', ['p' => $p])</div>
+        @endforeach
+      </div>
+    </section>
+  @endif
+
+</div>
 @endsection
