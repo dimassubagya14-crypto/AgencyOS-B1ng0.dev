@@ -12,15 +12,18 @@ class PortfolioController extends Controller
     // GET /portfolio
     public function index(Request $request): View
     {
-        $query = Portfolio::published()->orderByDesc('sort_order')->orderByDesc('created_at');
+        // Semua project dimuat sekaligus supaya cari, filter, dan urutan di halaman berjalan
+        // instan tanpa muat ulang (jumlah project agency relatif kecil).
+        $portfolios = Portfolio::published()
+            ->orderByDesc('sort_order')
+            ->orderByDesc('created_at')
+            ->limit(120)
+            ->get();
 
         $category = $request->query('category');
-        if ($category) {
-            $query->where('category', $category);
-        }
 
         return view('portfolio.index', [
-            'portfolios' => $query->paginate(9)->withQueryString(),
+            'portfolios' => $portfolios,
             'categories' => Portfolio::published()->distinct()->pluck('category'),
             'category' => $category,
         ]);
@@ -38,6 +41,15 @@ class PortfolioController extends Controller
             ->limit(3)
             ->get();
 
-        return view('portfolio.show', compact('portfolio', 'related'));
+        // Navigasi ke project sebelumnya / berikutnya (urutan sama dengan halaman daftar).
+        $ordered = Portfolio::published()
+            ->orderByDesc('sort_order')
+            ->orderByDesc('created_at')
+            ->get(['id', 'slug', 'name', 'category']);
+        $position = $ordered->search(fn ($item) => $item->id === $portfolio->id);
+        $prev = ($position !== false && $position > 0) ? $ordered[$position - 1] : null;
+        $next = ($position !== false && $position < $ordered->count() - 1) ? $ordered[$position + 1] : null;
+
+        return view('portfolio.show', compact('portfolio', 'related', 'prev', 'next'));
     }
 }
