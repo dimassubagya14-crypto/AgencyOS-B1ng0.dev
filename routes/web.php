@@ -14,6 +14,7 @@ use App\Http\Controllers\Web\PwaController;
 use App\Http\Controllers\Web\ServiceRequestController;
 use App\Http\Controllers\Web\TeamPortfolioController;
 use App\Models\Portfolio;
+use App\Models\TeamMember;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,6 +53,16 @@ Route::get('/sitemap.xml', function () {
             'priority' => '0.6',
             'lastmod' => $p->updated_at->toAtomString(),
         ])
+    )->concat(
+        TeamMember::where('portfolio_published', true)
+            ->where('is_active', true)
+            ->whereNotNull('slug')
+            ->get()
+            ->map(fn ($m) => [
+                'loc' => route('team.portfolio', $m->slug),
+                'priority' => '0.5',
+                'lastmod' => $m->updated_at->toAtomString(),
+            ])
     );
 
     return response()
