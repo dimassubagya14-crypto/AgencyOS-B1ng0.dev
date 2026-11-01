@@ -19,7 +19,7 @@
 <div class="admin-shell min-h-screen bg-surface-container-low">
   <aside class="admin-sidebar bg-primary">
     <div class="admin-sidebar-brand">
-      <div class="font-display font-bold text-lg text-white">B!ng0<span class="text-secondary-bright">.dev</span></div>
+      <div class="font-display font-bold text-lg text-white" style="display:flex;align-items:center;gap:.55rem"><img src="/logo-mark.svg" alt="" width="30" height="30" style="border-radius:8px;flex-shrink:0" /><span>B!ng0<span class="text-secondary-bright">.dev</span></span></div>
       <span class="font-mono text-[10px] tracking-widest text-white/50">ADMIN PANEL</span>
     </div>
 
@@ -64,7 +64,7 @@
 
   <main class="admin-main">
     <header class="md:hidden bg-primary text-white px-4 h-14 flex items-center justify-between sticky top-0 z-30">
-      <span class="font-display font-bold">B!ng0<span class="text-secondary-bright">.dev</span></span>
+      <span class="font-display font-bold" style="display:inline-flex;align-items:center;gap:.5rem"><img src="/logo-mark.svg" alt="" width="26" height="26" style="border-radius:7px;flex-shrink:0" /><span>B!ng0<span class="text-secondary-bright">.dev</span></span></span>
       <form method="POST" action="{{ route('admin.logout') }}">
         @csrf
         <button type="submit" class="text-xs font-mono">Logout</button>

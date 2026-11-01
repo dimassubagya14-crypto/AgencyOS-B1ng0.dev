@@ -1,10 +1,10 @@
 /* Service worker AgencyOS / B!ng0.dev
    Strategi sengaja konservatif: halaman HTML TIDAK di-cache (supaya data admin & login
    selalu segar dan tidak bocor), hanya aset statis. Saat offline tampil halaman /offline. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const STATIC_CACHE = 'static-' + VERSION;
 const OFFLINE_URL = '/offline';
-const PRECACHE = [OFFLINE_URL, '/css/app.css', '/icons/icon-192.png', '/icons/icon-512.png'];
+const PRECACHE = [OFFLINE_URL, '/css/app.css', '/css/motion.css', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

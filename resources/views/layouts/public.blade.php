@@ -16,15 +16,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet" />
 <link rel="stylesheet" href="/css/app.css" />
+<link rel="stylesheet" href="/css/motion.css" />
 @include('partials.pwa-head', ['pwaScope' => 'public'])
 @stack('head')
 </head>
 <body class="font-body text-on-surface antialiased">
 @include('partials.page-loader')
+<div id="scroll-progress" aria-hidden="true"></div>
 
 <header class="glass sticky top-0 z-40 border-b border-outline-variant">
   <div class="max-w-6xl mx-auto px-5 md:px-10 h-[64px] md:h-[72px] flex items-center justify-between">
-    <a href="{{ route('home') }}" class="font-display font-bold text-lg md:text-xl tracking-tight text-primary">B!ng0<span class="text-secondary-bright">.dev</span></a>
+    <a href="{{ route('home') }}" class="font-display font-bold text-lg md:text-xl tracking-tight text-primary" style="display:inline-flex;align-items:center;gap:.55rem" aria-label="B!ng0.dev — Beranda"><img src="/logo-mark.svg" alt="" width="32" height="32" style="border-radius:8px;flex-shrink:0" /><span>B!ng0<span class="text-secondary-bright">.dev</span></span></a>
     <nav class="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-wider">
       <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-primary font-semibold' : 'text-on-surface-variant hover:text-primary' }}">Beranda</a>
       <a href="{{ route('portfolio.index') }}" class="{{ request()->routeIs('portfolio.*') ? 'text-primary font-semibold' : 'text-on-surface-variant hover:text-primary' }}">Portfolio</a>
@@ -185,6 +187,8 @@
     document.body.style.overflow = '';
   }
 </script>
+<button type="button" id="to-top" aria-label="Kembali ke atas">&uarr;</button>
+<script src="/js/motion.js" defer></script>
 @include('partials.pwa-install')
 </body>
 </html>

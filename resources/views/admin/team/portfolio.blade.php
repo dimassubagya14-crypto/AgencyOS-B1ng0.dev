@@ -18,6 +18,10 @@
     $projRows[] = [];
     $selectedIds = array_map('intval', old('agency_portfolio_ids', $member->agency_portfolio_ids ?? []));
     $publicUrl = $member->portfolioUrl();
+    $expRows = array_values(old('experiences', $member->experiences ?? []));
+    $expRows[] = [];
+    $eduRows = array_values(old('education', $member->education ?? []));
+    $eduRows[] = [];
 @endphp
 
 <a href="{{ route('admin.team.index') }}" class="text-xs font-mono text-secondary hover:underline mb-4 inline-block">← Kembali ke Anggota Tim</a>
@@ -40,6 +44,7 @@
       <p class="text-xs text-on-surface-variant mt-2">Status: <span class="font-semibold">{{ $member->portfolio_published ? 'Dipublikasikan' : 'Disembunyikan' }}</span></p>
       <div class="flex flex-wrap gap-2 mt-4">
         <a href="{{ route('admin.team.portfolio.preview', $member) }}" target="_blank" class="px-4 py-2 border border-outline-variant rounded text-sm font-medium">Pratinjau</a>
+        <a href="{{ route('admin.team.portfolio.cv', $member) }}" target="_blank" class="px-4 py-2 border border-outline-variant rounded text-sm font-medium">Lihat CV</a>
         <form method="POST" action="{{ route('admin.team.portfolio.publish', $member) }}">
           @csrf
           <button type="submit" class="px-4 py-2 border border-outline-variant rounded text-sm font-medium">{{ $member->portfolio_published ? 'Sembunyikan' : 'Publikasikan' }}</button>
@@ -85,6 +90,24 @@
       </label>
     </div>
 
+    {{-- Pencarian kerja --}}
+    <div class="bg-white border border-outline-variant rounded-lg p-6 card-shadow space-y-4">
+      <h2 class="font-semibold text-primary">Untuk Melamar Kerja</h2>
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input type="checkbox" name="open_to_work" value="1" @checked(old('open_to_work', $member->open_to_work)) class="w-4 h-4" />
+        <span class="text-sm text-primary">Tampilkan lencana "Terbuka untuk pekerjaan" di portofolio</span>
+      </label>
+      <div>
+        <label class="{{ $labelCls }}">Posisi yang dicari</label>
+        <input name="desired_role" value="{{ old('desired_role', $member->desired_role) }}" placeholder="mis. Backend Developer, Full-stack Developer" class="{{ $inputCls }}" />
+      </div>
+      <div>
+        <label class="{{ $labelCls }}">Bahasa (pisahkan dengan koma)</label>
+        <input name="languages" value="{{ old('languages', $member->languages ? implode(', ', $member->languages) : '') }}" placeholder="mis. Indonesia (Native), Inggris (Profesional)" class="{{ $inputCls }}" />
+      </div>
+      <p class="text-xs text-on-surface-variant">Tombol <strong>Unduh CV</strong> otomatis muncul di portofolio. CV disusun dari data di halaman ini, dan email atau WhatsApp hanya ikut tampil kalau opsi "Tampilkan email dan WhatsApp" di atas dicentang.</p>
+    </div>
+
     {{-- Media sosial --}}
     <div class="bg-white border border-outline-variant rounded-lg p-6 card-shadow space-y-4">
       <h2 class="font-semibold text-primary">Tautan</h2>
@@ -96,6 +119,39 @@
           </div>
         @endforeach
       </div>
+    </div>
+
+    {{-- Pengalaman kerja --}}
+    <div class="bg-white border border-outline-variant rounded-lg p-6 card-shadow">
+      <h2 class="font-semibold text-primary mb-1">Pengalaman Kerja</h2>
+      <p class="text-xs text-on-surface-variant mb-4">Urutkan dari yang terbaru. Pakai satu baris per poin pencapaian. Baris yang posisinya kosong diabaikan.</p>
+      <div id="exp-list" class="space-y-4">
+        @foreach ($expRows as $i => $e)
+          <div class="border border-outline-variant rounded-lg p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input name="experiences[{{ $i }}][role]" value="{{ $e['role'] ?? '' }}" placeholder="Posisi / jabatan" class="{{ $inputCls }}" />
+            <input name="experiences[{{ $i }}][company]" value="{{ $e['company'] ?? '' }}" placeholder="Perusahaan / instansi" class="{{ $inputCls }}" />
+            <input name="experiences[{{ $i }}][period]" value="{{ $e['period'] ?? '' }}" placeholder="Periode (mis. Jan 2023 – Sekarang)" class="{{ $inputCls }} ap-span2" />
+            <textarea name="experiences[{{ $i }}][description]" rows="3" placeholder="Yang dikerjakan dan dicapai (satu baris per poin)" class="{{ $inputCls }} ap-span2">{{ $e['description'] ?? '' }}</textarea>
+          </div>
+        @endforeach
+      </div>
+      <button type="button" onclick="addRow('exp-list', 'tpl-exp')" class="mt-4 px-4 py-2 border border-outline-variant rounded text-sm font-medium">+ Tambah pengalaman</button>
+    </div>
+
+    {{-- Pendidikan --}}
+    <div class="bg-white border border-outline-variant rounded-lg p-6 card-shadow">
+      <h2 class="font-semibold text-primary mb-1">Pendidikan</h2>
+      <p class="text-xs text-on-surface-variant mb-4">Baris yang nama sekolah atau kampusnya kosong diabaikan.</p>
+      <div id="edu-list" class="space-y-4">
+        @foreach ($eduRows as $i => $ed)
+          <div class="border border-outline-variant rounded-lg p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input name="education[{{ $i }}][school]" value="{{ $ed['school'] ?? '' }}" placeholder="Sekolah / kampus" class="{{ $inputCls }}" />
+            <input name="education[{{ $i }}][degree]" value="{{ $ed['degree'] ?? '' }}" placeholder="Jurusan / gelar" class="{{ $inputCls }}" />
+            <input name="education[{{ $i }}][period]" value="{{ $ed['period'] ?? '' }}" placeholder="Periode (mis. 2019 – 2023)" class="{{ $inputCls }} ap-span2" />
+          </div>
+        @endforeach
+      </div>
+      <button type="button" onclick="addRow('edu-list', 'tpl-edu')" class="mt-4 px-4 py-2 border border-outline-variant rounded text-sm font-medium">+ Tambah pendidikan</button>
     </div>
 
     {{-- Sertifikat --}}
@@ -163,6 +219,21 @@
   </form>
 </div>
 
+<template id="tpl-exp">
+  <div class="border border-outline-variant rounded-lg p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <input name="experiences[__i__][role]" placeholder="Posisi / jabatan" class="{{ $inputCls }}" />
+    <input name="experiences[__i__][company]" placeholder="Perusahaan / instansi" class="{{ $inputCls }}" />
+    <input name="experiences[__i__][period]" placeholder="Periode (mis. Jan 2023 – Sekarang)" class="{{ $inputCls }} ap-span2" />
+    <textarea name="experiences[__i__][description]" rows="3" placeholder="Yang dikerjakan dan dicapai (satu baris per poin)" class="{{ $inputCls }} ap-span2"></textarea>
+  </div>
+</template>
+<template id="tpl-edu">
+  <div class="border border-outline-variant rounded-lg p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <input name="education[__i__][school]" placeholder="Sekolah / kampus" class="{{ $inputCls }}" />
+    <input name="education[__i__][degree]" placeholder="Jurusan / gelar" class="{{ $inputCls }}" />
+    <input name="education[__i__][period]" placeholder="Periode (mis. 2019 – 2023)" class="{{ $inputCls }} ap-span2" />
+  </div>
+</template>
 <template id="tpl-cert">
   <div class="border border-outline-variant rounded-lg p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
     <input name="certificates[__i__][name]" placeholder="Nama sertifikat" class="{{ $inputCls }}" />

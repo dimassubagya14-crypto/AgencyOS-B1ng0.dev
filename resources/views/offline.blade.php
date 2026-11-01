@@ -14,10 +14,11 @@
   .logo{font-weight:700;font-size:1.25rem;margin-bottom:1.5rem}
   .logo span{color:#3b82f6}
 </style>
+@include('partials.favicon')
 </head>
 <body>
   <div class="box">
-    <div class="logo">B!ng0<span>.dev</span></div>
+    <div class="logo"><img src="/logo-mark.svg" alt="" width="56" height="56" style="border-radius:14px;display:block;margin:0 auto .75rem" />B!ng0<span>.dev</span></div>
     <h1>Anda sedang offline</h1>
     <p>Koneksi internet terputus. Periksa jaringan Anda, lalu coba muat ulang halaman ini.</p>
     <button type="button" onclick="location.reload()">Coba lagi</button>

@@ -16,6 +16,7 @@ class TeamMember extends Model
         'user_id', 'name', 'email', 'phone', 'position', 'photo', 'bio', 'skills', 'is_active', 'sort_order',
         'slug', 'headline', 'location', 'about', 'social_links', 'certificates', 'projects',
         'agency_portfolio_ids', 'show_contact', 'portfolio_published',
+        'open_to_work', 'desired_role', 'experiences', 'education', 'languages',
     ];
 
     protected function casts(): array
@@ -29,6 +30,10 @@ class TeamMember extends Model
             'agency_portfolio_ids' => 'array',
             'show_contact' => 'boolean',
             'portfolio_published' => 'boolean',
+            'open_to_work' => 'boolean',
+            'experiences' => 'array',
+            'education' => 'array',
+            'languages' => 'array',
         ];
     }
 

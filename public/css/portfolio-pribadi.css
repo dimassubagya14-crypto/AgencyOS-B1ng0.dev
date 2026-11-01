@@ -1,0 +1,12 @@
+/* Tambahan portofolio tim untuk melamar kerja. Melengkapi motion.css (variabel --pf-*). */
+.pf-open{display:inline-flex;align-items:center;gap:.55rem;margin:.9rem 0 0;padding:.4rem .9rem;border-radius:999px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.45);color:#047857;font:600 .78rem "JetBrains Mono",ui-monospace,monospace}
+.dark-theme .pf-open{color:#6ee7b7}
+.pf-open i{flex-shrink:0;width:.6rem;height:.6rem;border-radius:50%;background:#10b981;animation:pf-ping 1.9s infinite}
+@keyframes pf-ping{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}70%,100%{box-shadow:0 0 0 .6rem rgba(16,185,129,0)}}
+.pf-act{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.1rem;border-radius:999px;background:var(--pf-text,#0F172A);color:var(--pf-bg,#fff);border:1px solid var(--pf-text,#0F172A);font:600 .78rem "JetBrains Mono",ui-monospace,monospace;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.pf-act::before{content:"\2193";font-size:.95rem;line-height:1}
+.pf-act:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,23,42,.25)}
+.pf-tl-desc{margin-top:.55rem;font-size:.88rem;line-height:1.7;color:var(--pf-muted,#475569);white-space:pre-line}
+.pf-langs{display:flex;flex-wrap:wrap;gap:.5rem}
+.pf-lang{display:inline-block;padding:.45rem .9rem;border:1px solid var(--pf-border,#c6c6cd);border-radius:.5rem;background:var(--pf-soft,#eff4ff);color:var(--pf-text,#0F172A);font:500 .8rem "JetBrains Mono",ui-monospace,monospace}
+@media (prefers-reduced-motion:reduce){.pf-open i{animation:none}.pf-act{transition:none}}

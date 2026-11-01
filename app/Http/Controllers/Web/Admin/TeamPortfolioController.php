@@ -29,6 +29,17 @@ class TeamPortfolioController extends Controller
             'location' => ['nullable', 'string', 'max:120'],
             'about' => ['nullable', 'string', 'max:5000'],
             'skills' => ['nullable', 'string', 'max:1000'],
+            'desired_role' => ['nullable', 'string', 'max:160'],
+            'languages' => ['nullable', 'string', 'max:500'],
+            'experiences' => ['nullable', 'array', 'max:20'],
+            'experiences.*.role' => ['nullable', 'string', 'max:160'],
+            'experiences.*.company' => ['nullable', 'string', 'max:160'],
+            'experiences.*.period' => ['nullable', 'string', 'max:60'],
+            'experiences.*.description' => ['nullable', 'string', 'max:1500'],
+            'education' => ['nullable', 'array', 'max:10'],
+            'education.*.school' => ['nullable', 'string', 'max:160'],
+            'education.*.degree' => ['nullable', 'string', 'max:160'],
+            'education.*.period' => ['nullable', 'string', 'max:60'],
             'social' => ['nullable', 'array'],
             'social.github' => $url,
             'social.linkedin' => $url,
@@ -85,6 +96,31 @@ class TeamPortfolioController extends Controller
 
         $ids = array_values(array_unique(array_map('intval', $data['agency_portfolio_ids'] ?? [])));
 
+        $experiences = collect($data['experiences'] ?? [])
+            ->map(fn ($e) => [
+                'role' => $text($e['role'] ?? ''),
+                'company' => $text($e['company'] ?? ''),
+                'period' => $text($e['period'] ?? ''),
+                'description' => $text($e['description'] ?? ''),
+            ])
+            ->filter(fn ($e) => $e['role'] !== '')
+            ->values()
+            ->all();
+
+        $education = collect($data['education'] ?? [])
+            ->map(fn ($e) => [
+                'school' => $text($e['school'] ?? ''),
+                'degree' => $text($e['degree'] ?? ''),
+                'period' => $text($e['period'] ?? ''),
+            ])
+            ->filter(fn ($e) => $e['school'] !== '')
+            ->values()
+            ->all();
+
+        $languages = isset($data['languages'])
+            ? array_values(array_filter(array_map('trim', explode(',', $data['languages']))))
+            : [];
+
         $member->fill([
             'headline' => $data['headline'] ?? null,
             'location' => $data['location'] ?? null,
@@ -95,6 +131,11 @@ class TeamPortfolioController extends Controller
             'projects' => $projects,
             'agency_portfolio_ids' => $ids,
             'show_contact' => $request->boolean('show_contact'),
+            'open_to_work' => $request->boolean('open_to_work'),
+            'desired_role' => $data['desired_role'] ?? null,
+            'languages' => $languages,
+            'experiences' => $experiences,
+            'education' => $education,
         ])->save();
 
         ActivityLog::record('update', 'team_members', $member->id, "Portofolio pribadi {$member->name} diperbarui");
@@ -138,5 +179,11 @@ class TeamPortfolioController extends Controller
     public function preview(TeamMember $member): View
     {
         return view('team.portfolio', ['member' => $member, 'preview' => true]);
+    }
+
+    // Pratinjau CV (bisa dibuka walau portofolio belum dipublikasikan).
+    public function cv(TeamMember $member): View
+    {
+        return view('team.cv', ['member' => $member, 'preview' => true]);
     }
 }

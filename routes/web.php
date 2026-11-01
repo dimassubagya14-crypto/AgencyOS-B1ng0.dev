@@ -26,6 +26,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio.index');
 Route::get('/portfolio/{slug}', [PortfolioController::class, 'show'])->name('portfolio.show');
 Route::get('/tim/{slug}', [TeamPortfolioController::class, 'show'])->where('slug', '[a-z0-9\-]+')->name('team.portfolio');
+Route::get('/tim/{slug}/cv', [TeamPortfolioController::class, 'cv'])->where('slug', '[a-z0-9\-]+')->name('team.cv');
 Route::get('/pesan-jasa', [ServiceRequestController::class, 'create'])->name('requests.create');
 Route::post('/pesan-jasa', [ServiceRequestController::class, 'store'])->middleware('throttle:public-form')->name('requests.store');
 Route::get('/pesan-jasa/sukses', [ServiceRequestController::class, 'success'])->name('requests.success');
@@ -99,6 +100,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/team/{member}/portfolio/generate', [AdminTeamPortfolioController::class, 'generate'])->name('team.portfolio.generate');
         Route::post('/team/{member}/portfolio/publish', [AdminTeamPortfolioController::class, 'togglePublish'])->name('team.portfolio.publish');
         Route::get('/team/{member}/portfolio/preview', [AdminTeamPortfolioController::class, 'preview'])->name('team.portfolio.preview');
+        Route::get('/team/{member}/portfolio/cv', [AdminTeamPortfolioController::class, 'cv'])->name('team.portfolio.cv');
 
         Route::get('/clients', [AdminClientController::class, 'index'])->name('clients.index');
         Route::patch('/clients/{client}', [AdminClientController::class, 'update'])->name('clients.update');
