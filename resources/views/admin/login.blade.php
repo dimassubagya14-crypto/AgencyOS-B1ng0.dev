@@ -7,12 +7,13 @@
 <meta name="robots" content="noindex, nofollow" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/css/app.css" />
+@include('partials.favicon')
 </head>
 <body class="font-body text-on-surface antialiased">
 @include('partials.page-loader', ['loaderMin' => 450, 'loaderMinRepeat' => 150])
 <div class="min-h-screen flex items-center justify-center bg-surface-container-low px-5">
   <div class="w-full max-w-sm bg-white border border-outline-variant rounded-xl p-8 card-shadow">
-    <div class="font-display font-bold text-xl text-primary mb-1">B!ng0<span class="text-secondary-bright">.dev</span></div>
+    <div class="font-display font-bold text-xl text-primary mb-1" style="display:flex;align-items:center;gap:.6rem"><img src="/logo-mark.svg" alt="" width="36" height="36" style="border-radius:9px;flex-shrink:0" /><span>B!ng0<span class="text-secondary-bright">.dev</span></span></div>
     <p class="text-sm text-on-surface-variant mb-6">Secure Admin Access</p>
 
     @if ($errors->any())
