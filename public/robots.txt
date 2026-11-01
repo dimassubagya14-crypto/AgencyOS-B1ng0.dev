@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: /sitemap.xml
+Sitemap: https://agencyos-b1ng0dev.sgp.dom.my.id/sitemap.xml
